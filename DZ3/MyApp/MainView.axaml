@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:data="using:MyApp.Data"
+             x:Class="MyApp.MainView">
+  <Grid Margin="24" RowDefinitions="Auto,*">
+    <StackPanel Spacing="4" Margin="0,0,0,18">
+      <TextBlock Text="FixPoint" FontSize="28" FontWeight="Bold" />
+      <TextBlock Text="Просмотр клиентов, услуг и заявок на ремонт" Opacity="0.7" />
+    </StackPanel>
+
+    <TabControl Grid.Row="1">
+      <TabItem Header="Клиенты">
+        <Grid ColumnDefinitions="2*,3*" ColumnSpacing="18" RowDefinitions="Auto,*">
+          <TextBlock Grid.Column="0" Text="Клиенты" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <TextBlock Grid.Column="1" Text="Заявки выбранного клиента" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <ListBox x:Name="ClientsList"
+                   Grid.Row="1" Grid.Column="0"
+                   SelectionChanged="ClientsList_OnSelectionChanged">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="data:Client">
+                <Border Padding="12" Margin="0,0,0,8" CornerRadius="6" Background="#162438">
+                  <StackPanel Spacing="3">
+                    <TextBlock Text="{Binding FullName}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Phone}" Opacity="0.8" />
+                    <TextBlock Text="{Binding Email}" Opacity="0.8" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <ListBox x:Name="ClientRequestsList" Grid.Row="1" Grid.Column="1">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="data:RepairRequest">
+                <Border Padding="12" Margin="0,0,0,8" CornerRadius="6" Background="#203149">
+                  <StackPanel Spacing="3">
+                    <TextBlock Text="{Binding Service.Name}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding ProblemDescription}" TextWrapping="Wrap" />
+                    <TextBlock Text="Статус: {Binding StatusCode}" Opacity="0.8" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Услуги">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Text="Доступные услуги FixPoint" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <ListBox x:Name="ServicesList" Grid.Row="1">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="data:Service">
+                <Border Padding="12" Margin="0,0,0,8" CornerRadius="6" Background="#162438">
+                  <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                      <TextBlock Text="Цена: " />
+                      <TextBlock Text="{Binding Price}" />
+                      <TextBlock Text=" руб." />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Opacity="0.8">
+                      <TextBlock Text="Длительность: " />
+                      <TextBlock Text="{Binding DurationMinutes}" />
+                      <TextBlock Text=" мин." />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Opacity="0.8">
+                      <TextBlock Text="Доступна: " />
+                      <TextBlock Text="{Binding IsAvailable}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Заявки">
+        <Grid RowDefinitions="Auto,*">
+          <TextBlock Text="Все заявки на ремонт" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <ListBox x:Name="RequestsList" Grid.Row="1">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="data:RepairRequest">
+                <Border Padding="12" Margin="0,0,0,8" CornerRadius="6" Background="#162438">
+                  <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                    <TextBlock Text="{Binding Client.FullName}" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="{Binding Service.Name}" />
+                    <TextBlock Grid.Row="1" Text="{Binding ProblemDescription}" TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Статус: {Binding StatusCode}" Opacity="0.8" />
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Opacity="0.8">
+                      <TextBlock Text="Создана: " />
+                      <TextBlock Text="{Binding CreatedAt}" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</UserControl>
