@@ -1,8 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="MyApp.MainWindow"
-        Title="FixPoint — заявки на ремонт"
-        Width="960" Height="640"
-        MinWidth="600" MinHeight="420">
-  <MainView />
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:local="using:MyApp" x:Class="MyApp.MainWindow" Title="FixPoint" Height="820">
+ <local:MainView />
 </Window>
