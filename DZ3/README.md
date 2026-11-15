@@ -8,6 +8,12 @@
 
 Данные загружаются после `InitializeComponent()` через `AppDbContext`: сначала вызываются `EnsureCreated()` и `DbSeed.Seed()`, затем выполняются запросы с `Include` для связанных записей. В интерфейсе нет добавления, редактирования, удаления, новых окон, `MessageBox` и `DataGrid`.
 
+Превью экранов:
+
+- [Клиенты и заявки выбранного клиента](screens/clients.svg)
+- [Услуги](screens/services.svg)
+- [Все заявки](screens/requests.svg)
+
 Запуск Windows-приложения из каталога `DZ3`:
 
 ```bash
