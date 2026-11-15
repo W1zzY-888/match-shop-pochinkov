@@ -67,3 +67,56 @@ foreach (var order in orders)
 Console.WriteLine($"Общая выручка: {revenue:F2} ₽");
 // Здесь сумма рассчитана по текущему прайсу, как требует задание.
 // В настоящем магазине цена покупки должна храниться отдельно в заказе.
+
+Console.WriteLine("=== Шаг 5. Изменение ===");
+var customer = db.Customers.First(c => c.Name == "Иван Петров");
+customer.Phone = "+7 900 999-00-00";
+db.SaveChanges();
+Console.WriteLine($"Телефон Ивана: {customer.Phone}");
+
+foreach (var product in db.Products)
+    product.Price = decimal.Round(product.Price * 1.1m, 2, MidpointRounding.AwayFromZero);
+db.SaveChanges();
+foreach (var product in db.Products.OrderBy(p => p.Price))
+    Console.WriteLine($"Новая цена: {product.Name} — {product.Price:F2} ₽");
+
+var soldOut = db.Products.First(p => p.Id == kitchen.Id);
+soldOut.Stock = 0;
+db.SaveChanges();
+Console.WriteLine($"Остаток {soldOut.Name}: {soldOut.Stock}");
+
+var beforeCount = db.Orders.Count();
+var beforeStock = db.Products.AsNoTracking().Single(p => p.Id == household.Id).Stock;
+var accepted = PlaceOrder(db, maxim.Id, household.Id, 5);
+var afterCount = db.Orders.Count();
+var afterStock = db.Products.AsNoTracking().Single(p => p.Id == household.Id).Stock;
+if (!accepted || afterCount != beforeCount + 1 || afterStock != beforeStock - 5)
+    throw new InvalidOperationException("Ошибка проверки успешного заказа");
+Console.WriteLine($"Успешный заказ: заказов {afterCount}, остаток {afterStock}");
+
+var rejected = PlaceOrder(db, maxim.Id, household.Id, afterStock + 1);
+if (rejected || db.Orders.Count() != afterCount ||
+    db.Products.AsNoTracking().Single(p => p.Id == household.Id).Stock != afterStock)
+    throw new InvalidOperationException("При отказе данные не должны меняться");
+Console.WriteLine("Отказ проверен: количество заказов и остаток не изменились.");
+
+bool PlaceOrder(ShopContext context, int customerId, int productId, int quantity)
+{
+    if (quantity <= 0) throw new ArgumentOutOfRangeException(nameof(quantity));
+    var buyer = context.Customers.Find(customerId)
+        ?? throw new ArgumentException("Покупатель не найден");
+    var product = context.Products.Find(productId)
+        ?? throw new ArgumentException("Товар не найден");
+    if (product.Stock < quantity)
+    {
+        Console.WriteLine("Недостаточно на складе");
+        return false;
+    }
+    context.Orders.Add(new Order { Customer = buyer, Product = product, Quantity = quantity });
+    product.Stock -= quantity;
+    // Один SaveChanges объединяет INSERT заказа и UPDATE остатка в транзакцию:
+    // сохранятся оба изменения либо ни одно. Это учебный однопользовательский пример;
+    // при параллельных покупках также нужна защита от конкурентного изменения остатка.
+    context.SaveChanges();
+    return true;
+}
