@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <rect width="1200" height="760" fill="#101923"/>
+  <text x="48" y="62" fill="#f4f7fb" font-family="Arial" font-size="34" font-weight="700">FixPoint</text>
+  <text x="48" y="94" fill="#9eacbc" font-family="Arial" font-size="18">Просмотр клиентов, услуг и заявок на ремонт</text>
+  <rect x="48" y="130" width="1104" height="54" rx="8" fill="#203149"/>
+  <text x="74" y="165" fill="#ffffff" font-family="Arial" font-size="20" font-weight="700">Клиенты</text>
+  <text x="232" y="165" fill="#aebaca" font-family="Arial" font-size="20">Услуги</text>
+  <text x="332" y="165" fill="#aebaca" font-family="Arial" font-size="20">Заявки</text>
+  <text x="48" y="226" fill="#ffffff" font-family="Arial" font-size="22" font-weight="700">Клиенты</text>
+  <text x="486" y="226" fill="#ffffff" font-family="Arial" font-size="22" font-weight="700">Заявки выбранного клиента</text>
+  <g font-family="Arial">
+    <rect x="48" y="250" width="390" height="108" rx="8" fill="#162438"/>
+    <text x="70" y="284" fill="#fff" font-size="20" font-weight="700">Максим Починков</text><text x="70" y="313" fill="#b8c4d1" font-size="16">+7 900 000-00-01</text><text x="70" y="338" fill="#b8c4d1" font-size="16">maxim@example.com</text>
+    <rect x="48" y="374" width="390" height="108" rx="8" fill="#162438"/><text x="70" y="408" fill="#fff" font-size="20" font-weight="700">Анна Белова</text><text x="70" y="437" fill="#b8c4d1" font-size="16">+7 900 000-00-02</text><text x="70" y="462" fill="#b8c4d1" font-size="16">anna@example.com</text>
+    <rect x="486" y="250" width="666" height="108" rx="8" fill="#203149"/><text x="510" y="284" fill="#fff" font-size="20" font-weight="700">Замена экрана</text><text x="510" y="313" fill="#d9e1ea" font-size="16">Треснул экран смартфона</text><text x="510" y="340" fill="#b8c4d1" font-size="16">Статус: 2</text>
+    <rect x="486" y="374" width="666" height="108" rx="8" fill="#203149"/><text x="510" y="408" fill="#fff" font-size="20" font-weight="700">Диагностика</text><text x="510" y="437" fill="#d9e1ea" font-size="16">Телефон быстро разряжается</text><text x="510" y="464" fill="#b8c4d1" font-size="16">Статус: 1</text>
+  </g>
+</svg>
