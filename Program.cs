@@ -8,3 +8,6 @@ Console.WriteLine("=== Шаг 1. Покупатели и товары ===");
 using var db = new ShopContext();
 db.Database.EnsureDeleted();
 db.Database.EnsureCreated();
+
+Console.WriteLine("=== Шаг 2. Заказы ===");
+Console.WriteLine("У Orders два внешних ключа: CustomerId и ProductId.");
