@@ -12,6 +12,8 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.MainWindow = new MainWindow();
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime mobile)
+            mobile.MainView = new MainView();
 
         base.OnFrameworkInitializationCompleted();
     }
