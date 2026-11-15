@@ -43,3 +43,27 @@ Console.WriteLine($"Покупателей: {db.Customers.Count()}, товаро
 Console.WriteLine($"Заказов Ивана: {db.Orders.Count(o => o.CustomerId == ivan.Id)}");
 Console.WriteLine($"Заказов Сергея: {db.Orders.Count(o => o.CustomerId == sergey.Id)}");
 db.ChangeTracker.Clear();
+
+Console.WriteLine("=== Шаг 4. Выборка ===");
+var omsk = db.Customers.Where(c => c.City == "Омск").OrderBy(c => c.Name).ToList();
+foreach (var c in omsk) Console.WriteLine($"{c.Name}, {c.Phone}");
+
+Console.WriteLine("Спички дешевле 100 рублей:");
+var cheap = db.Products.Where(p => p.Price < 100m).OrderBy(p => p.Price).ToList();
+foreach (var product in cheap) Console.WriteLine($"{product.Name}: {product.Price:F2} ₽");
+Console.WriteLine($"Видов в наличии: {db.Products.Count(p => p.Stock > 0)}");
+Console.WriteLine("Три самых дорогих товара:");
+var expensive = db.Products.OrderByDescending(p => p.Price).Take(3).ToList();
+foreach (var product in expensive) Console.WriteLine($"{product.Name}: {product.Price:F2} ₽");
+
+var orders = db.Orders.Include(o => o.Customer).Include(o => o.Product).OrderBy(o => o.Id).ToList();
+decimal revenue = 0m;
+foreach (var order in orders)
+{
+    decimal total = order.Product.Price * order.Quantity;
+    revenue += total;
+    Console.WriteLine($"{order.Customer.Name} — {order.Product.Name} — {order.Quantity} шт. — {total:F2} ₽");
+}
+Console.WriteLine($"Общая выручка: {revenue:F2} ₽");
+// Здесь сумма рассчитана по текущему прайсу, как требует задание.
+// В настоящем магазине цена покупки должна храниться отдельно в заказе.
