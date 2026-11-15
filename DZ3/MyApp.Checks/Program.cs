@@ -3,13 +3,14 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using MyApp;
 using MyApp.Data;
 
 AppBuilder.Configure<App>().UseSkia().UseHeadless(new AvaloniaHeadlessPlatformOptions
 { UseHeadlessDrawing = false }).SetupWithoutStarting();
 var view = new MainView();
-var window = new Window { Content = view, Width = 480, Height = 1000 };
+var window = new Window { Content = view, Width = 360, Height = 1000 };
 window.Show();
 var output = args.Length == 0 ? "screens" : args[0];
 Directory.CreateDirectory(output);
@@ -24,6 +25,21 @@ void Shot(string name)
  bitmap.Save(Path.Combine(output, name + ".png"));
 }
 int Count<T>() where T : class { using var db = new AppDbContext(); return db.Set<T>().Count(); }
+foreach (var tab in new[] { 0, 1, 2 })
+{
+ C<TabControl>("Tabs").SelectedIndex = tab;
+ Dispatcher.UIThread.RunJobs();
+ var fields = view.GetVisualDescendants().OfType<Control>()
+  .Where(x => x.IsEffectivelyVisible && !string.IsNullOrEmpty(x.Name) && !x.Name.StartsWith("PART_") &&
+    (x is TextBox || x is ComboBox || x is Button || x is CalendarDatePicker || x is CheckBox)).ToList();
+ Check(fields.Count > 0 && fields.All(x =>
+ {
+  var origin = x.TranslatePoint(new Point(0, 0), window);
+  return origin.HasValue && origin.Value.X >= 0 && origin.Value.X + x.Bounds.Width <= 360 && x.Bounds.Height >= 40;
+ }), "inputs fit narrow viewport and have touch height: tab " + tab);
+ Shot("narrow-tab-" + tab);
+}
+C<TabControl>("Tabs").SelectedIndex = 0;
 var tag = "Проверка " + Guid.NewGuid().ToString("N")[..8];
 try
 {
@@ -74,9 +90,15 @@ try
  C<ListBox>("ClientsList").SelectedItem = C<ListBox>("ClientsList").Items.OfType<Client>().Single(x => x.FullName == tag + " изменён");
  Click("ClientsDeleteButton");
  Check(Count<Client>() == before && Count<RepairRequest>() == requestsBefore, "client deletion cascades to requests");
+ Input("ClientFullName", tag); Input("ClientPhone", "+7 900 123-45-67"); Click("ClientsAddButton");
+ C<ComboBox>("RepairRequestClient").SelectedItem = C<ComboBox>("RepairRequestClient").Items.OfType<Client>().Single(x => x.FullName == tag);
+ C<ComboBox>("RepairRequestService").SelectedItem = C<ComboBox>("RepairRequestService").Items.OfType<Service>().Single(x => x.Name == tag);
+ C<CalendarDatePicker>("RepairRequestCreatedAt").SelectedDate = DateTime.Today;
+ Input("RepairRequestProblemDescription", "Проверка удаления услуги"); Input("RepairRequestStatusCode", "1"); Click("RequestsAddButton");
  C<TabControl>("Tabs").SelectedIndex = 1;
  C<ListBox>("ServicesList").SelectedItem = C<ListBox>("ServicesList").Items.OfType<Service>().Single(x => x.Name == tag);
  Click("ServicesDeleteButton"); Check(Count<Service>() == servicesBefore, "service deleted");
+ Check(Count<RepairRequest>() == requestsBefore && Count<Client>() == before + 1, "service deletion cascades to requests but keeps client");
  Console.WriteLine("ALL CHECKS PASSED");
 }
 finally
