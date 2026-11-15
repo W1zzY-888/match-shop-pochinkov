@@ -100,6 +100,36 @@ if (rejected || db.Orders.Count() != afterCount ||
     throw new InvalidOperationException("При отказе данные не должны меняться");
 Console.WriteLine("Отказ проверен: количество заказов и остаток не изменились.");
 
+Console.WriteLine("=== Шаг 6. Удаление ===");
+var leaving = db.Customers.First(c => c.Name == "Ольга Смирнова");
+db.Customers.Remove(leaving);
+db.SaveChanges();
+Console.WriteLine($"Ольга удалена: {!db.Customers.Any(c => c.Id == olga.Id)}");
+
+var unavailable = db.Products.Where(p => p.Stock == 0).ToList();
+db.Products.RemoveRange(unavailable);
+db.SaveChanges();
+Console.WriteLine($"Товаров осталось: {db.Products.Count()}");
+
+// Сначала очищаем отслеживание, чтобы удаление связанных заказов выполнила сама БД.
+db.ChangeTracker.Clear();
+var offended = db.Customers.Single(c => c.Name == "Иван Петров");
+var offendedId = offended.Id;
+Console.WriteLine($"Заказов Ивана до удаления: {db.Orders.Count(o => o.CustomerId == offendedId)}");
+db.Customers.Remove(offended);
+db.SaveChanges();
+Console.WriteLine($"Заказов Ивана после удаления: {db.Orders.Count(o => o.CustomerId == offendedId)}");
+// Обязательные связи получили ON DELETE CASCADE. Без загруженных заказов EF
+// отправляет DELETE покупателя, а PostgreSQL сам удаляет связанные заказы.
+// При удалении товара каскад тоже удаляет его заказы. Для магазина это плохо:
+// теряется история продаж. Лучше архивировать записи и запрещать каскад
+// для истории заказов (DeleteBehavior.Restrict), а не стирать её.
+
+if (db.Customers.Count() != 3 || db.Products.Count() != 3 || db.Orders.Count() != 2)
+    throw new InvalidOperationException("Итоговые количества не совпали");
+Console.WriteLine($"Итог: покупателей {db.Customers.Count()}, товаров {db.Products.Count()}, заказов {db.Orders.Count()}");
+Console.WriteLine("Все шаги выполнены без ошибок.");
+
 bool PlaceOrder(ShopContext context, int customerId, int productId, int quantity)
 {
     if (quantity <= 0) throw new ArgumentOutOfRangeException(nameof(quantity));
